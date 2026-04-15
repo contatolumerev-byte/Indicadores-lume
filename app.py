@@ -4,8 +4,8 @@ import datetime
 
 # --- CONFIGURAÇÃO DO SUPABASE ---
 # Substitua pelos seus dados reais do painel do Supabase
-url: str = "SUA_URL_DO_SUPABASE"
-key: str = "SUA_API_KEY_DO_SUPABASE"
+url: str = "https://dhvekggpufraioiyszle.supabase.co"
+key: str = "sb_publishable_h5Ot3KlVRXnFEmrGe2Lviw_kjsX4ErE"
 supabase: Client = create_client(url, key)
 
 # --- DICIONÁRIO MULTILÍNGUE (Governança Global) ---
