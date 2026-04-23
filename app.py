@@ -1,139 +1,32 @@
 import streamlit as st
 from supabase import create_client, Client
-import datetime
 
-# --- CONFIGURAÇÃO DO SUPABASE ---
-# Substitua pelos seus dados reais do painel do Supabase
-url: str = "https://dhvekggpufraioiyszle.supabase.co"
-key: str = "sb_publishable_h5Ot3KlVRXnFEmrGe2Lviw_kjsX4ErE"
-supabase: Client = create_client(url, key)
-
-# --- DICIONÁRIO MULTILÍNGUE (Governança Global) ---
-languages = {
-    'Português': {
-        'title': 'Portal de Indicadores Shalom',
-        'mission': 'Selecione a Missão',
-        'area': 'Selecione a Área',
-        'year': 'Ano de Referência',
-        'confidence': 'Nível de Confiança do Dado',
-        'options': ['Verificado (Sistema)', 'Planilha/Manual', 'Estimativa (Chute)'],
-        'btn': 'Salvar Indicadores',
-        'success': 'Dados enviados com sucesso para a base unificada!',
-        'areas': ['Vocacional', 'Financeiro', 'Obras Sociais'],
-        'metrics': {
-            'Vocacional': ['Novos Engajados', 'Membros Ativos', 'Saídas'],
-            'Financeiro': ['Arrecadação Total', 'Despesas Operacionais', 'Fundo de Missão'],
-            'Obras Sociais': ['Atendimentos', 'Famílias Assistidas', 'Voluntários']
-        }
-    },
-    'English': {
-        'title': 'Shalom Indicators Portal',
-        'mission': 'Select Mission',
-        'area': 'Select Area',
-        'year': 'Reference Year',
-        'confidence': 'Data Confidence Level',
-        'options': ['Verified (System)', 'Spreadsheet/Manual', 'Estimate (Guess)'],
-        'btn': 'Save Indicators',
-        'success': 'Data successfully sent to unified database!',
-        'areas': ['Vocational', 'Financial', 'Social Works'],
-        'metrics': {
-            'Vocacional': ['New Engaged', 'Active Members', 'Departures'],
-            'Financial': ['Total Revenue', 'Operating Expenses', 'Mission Fund'],
-            'Social Works': ['Services Provided', 'Assisted Families', 'Volunteers']
-        }
-    },
-    'Italiano': {
-        'title': 'Portale degli Indicatori Shalom',
-        'mission': 'Seleziona Missione',
-        'area': 'Seleziona Area',
-        'year': 'Anno di Riferimento',
-        'confidence': 'Livello di Fiducia dei Dati',
-        'options': ['Verificato', 'Manuale', 'Stima (Chute)'],
-        'btn': 'Salva Indicatori',
-        'success': 'Dati inviati con successo!',
-        'areas': ['Vocazionale', 'Finanziario', 'Opere Sociali'],
-        'metrics': {
-            'Vocacional': ['Nuovi Impegnati', 'Membri Attivi', 'Uscite'],
-            'Finanziario': ['Entrate Totali', 'Spese Operative', 'Fondo Missione'],
-            'Opere Sociali': ['Servizi', 'Famiglie Assistite', 'Volontari']
-        }
-    }
-    # Nota: Você pode expandir para FR, ES e DE seguindo o mesmo padrão.
-}
-
-# --- INTERFACE ---
-st.set_page_config(page_title="Lume Rev | Shalom Global", page_icon="📊")
-
-# Seletor de Idioma na Sidebar
-lang_choice = st.sidebar.selectbox("🌍 Language / Idioma", list(languages.keys()))
-lang = languages[lang_choice]
-
-st.title(lang['title'])
-st.markdown("---")
-
-# --- FORMULÁRIO ---
-with st.form("workflow_v1"):
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        mission = st.text_input(lang['mission'], placeholder="Ex: Fortaleza / Roma")
-        area = st.selectbox(lang['area'], lang['areas'])
-        
-    with col2:
-        year = st.selectbox(lang['year'], [2024, 2025, 2026])
-        confidence = st.selectbox(lang['confidence'], lang['options'])
-
-    st.subheader(f"📊 {area}")
-    
-    # Busca os 3 indicadores específicos da área selecionada
-    idx = lang['areas'].index(area)
-    area_key_pt = languages['Português']['areas'][idx] # Chave fixa para o banco
-    metrics = lang['metrics'][area]
-    
-    val1 = st.number_input(metrics[0], min_value=0)
-    val2 = st.number_input(metrics[1], min_value=0)
-    val3 = st.number_input(metrics[2], min_value=0)
-
-    submitted = st.form_submit_button(lang['btn'])
-
-    if submitted:
-        # Preparação dos dados para o Supabase (Usando IDs fixos para o Looker Studio entender)
-        data_to_save = [
-            {"missao": mission, "area": area_key_pt, "indicador": metrics[0], "valor": val1, "ano": year, "confianca": confidence},
-            {"missao": mission, "area": area_key_pt, "indicador": metrics[1], "valor": val2, "ano": year, "confianca": confidence},
-            {"missao": mission, "area": area_key_pt, "indicador": metrics[2], "valor": val3, "ano": year, "confianca": confidence}
-        ]
-        
-        try:
-            # Envio para o Supabase
-            supabase.table("historico_indicadores").insert(data_to_save).execute()
-            st.success(lang['success'])
-            st.balloons()
-        except Exception as e:
-            st.error(f"Erro ao conectar com Supabase: {e}")
-
-# --- RODAPÉ ESTRATÉGICO ---
-st.sidebar.markdown("---")
-st.sidebar.info(f"**Lume Rev Strategy**\n\nEste portal alimenta automaticamente as projeções de 5 anos no Looker Studio.")
-import streamlit as st
-from supabase import create_client, Client
-
-# 1. CONEXÃO (Substitua pela sua KEY real que você já usou antes)
+# 1. CONEXÃO (Mantenha suas credenciais reais aqui)
 SUPABASE_URL = "https://dhvekggpufraioiyszle.supabase.co"
 SUPABASE_KEY = "SUA_API_KEY_AQUI" 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# 2. DICIONÁRIO MULTILÍNGUE (A "Pele" do App)
+# 2. DICIONÁRIO MULTILÍNGUE (Interface com 6 idiomas)
 LANGUAGES = {
-    "Português": {"mission": "Missão", "sector": "Setor Responsável", "ind": "Indicador", "val": "Valor", "conf": "Confiança", "btn": "Salvar", "msg": "Sucesso!"},
-    "English": {"mission": "Mission", "sector": "Responsible Sector", "ind": "Indicator", "val": "Value", "conf": "Confidence", "btn": "Save", "msg": "Success!"},
-    "Italiano": {"mission": "Missione", "sector": "Settore Responsabile", "ind": "Indicatore", "val": "Valore", "conf": "Fiducia", "btn": "Salvare", "msg": "Successo!"},
-    "Español": {"mission": "Misión", "sector": "Sector Responsable", "ind": "Indicador", "val": "Valor", "conf": "Confianza", "btn": "Guardar", "msg": "¡Éxito!"},
-    "Français": {"mission": "Mission", "sector": "Secteur Responsable", "ind": "Indicateur", "val": "Valeur", "conf": "Confiance", "btn": "Enregistrer", "msg": "Succès!"},
-    "Deutsch": {"mission": "Mission", "sector": "Zuständiger Sektor", "ind": "Indikator", "val": "Wert", "conf": "Vertrauen", "btn": "Speichern", "msg": "Erfolgreich!"}
+    "Português": {"mission": "Missão", "sector": "Setor Responsável", "ind": "Indicador", "val": "Valor", "conf": "Nível de Confiança do Dado", "btn": "Salvar Dados", "msg": "Dados salvos com sucesso!"},
+    "English": {"mission": "Mission", "sector": "Responsible Sector", "ind": "Indicator", "val": "Value", "conf": "Data Confidence Level", "btn": "Save Data", "msg": "Data saved successfully!"},
+    "Italiano": {"mission": "Missione", "sector": "Settore Responsabile", "ind": "Indicatore", "val": "Valore", "conf": "Livello di Fiducia dei Dati", "btn": "Salvare i Dati", "msg": "Dati salvati con successo!"},
+    "Español": {"mission": "Misión", "sector": "Sector Responsable", "ind": "Indicador", "val": "Valor", "conf": "Nivel de Confianza de los Datos", "btn": "Guardar Datos", "msg": "¡Datos guardados con éxito!"},
+    "Français": {"mission": "Mission", "sector": "Secteur Responsable", "ind": "Indicateur", "val": "Valeur", "conf": "Niveau de Confiance des Données", "btn": "Enregistrer", "msg": "Données enregistrées!"},
+    "Deutsch": {"mission": "Mission", "sector": "Bereich", "ind": "Indikator", "val": "Wert", "conf": "Datenvertrauensniveau", "btn": "Speichern", "msg": "Erfolgreich gespeichert!"}
 }
 
-# 3. BASE DE INDICADORES (O "Coração" - Sempre em PT para o Looker)
+# Opções de confiança (Sua escala validada)
+CONFIDENCE_OPTIONS = {
+    "Português": ["Auditado (Sistema)", "Planilha de Controle", "Estimativa / Manual"],
+    "English": ["Audited (System)", "Control Spreadsheet", "Estimation / Manual"],
+    "Italiano": ["Auditato (Sistema)", "Foglio di Calcolo", "Stima / Manuale"],
+    "Español": ["Auditado (Sistema)", "Planilla de Control", "Estimación / Manual"],
+    "Français": ["Audité (Système)", "Feuille de Calcul", "Estimation / Manuel"],
+    "Deutsch": ["Geprüft (System)", "Kontrollblatt", "Schätzung / Manuell"]
+}
+
+# 3. BASE DE INDICADORES (Sempre em PT para o Looker Studio)
 DADOS_ESTRATEGICOS = {
     "Assistência Missionária": [
         "Taxa de crescimento de difusões em novas dioceses",
@@ -147,37 +40,37 @@ DADOS_ESTRATEGICOS = {
         "Percentual de aumento de pessoas alcançadas (Querigma)",
         "Número de membros no grupo de oração",
         "Taxa de permanência dos ingressantes após 6 meses",
+        "Percentual de pessoas acompanhadas nos Grupos de Oração",
         "Percentual de pessoas engajadas em ministérios"
     ],
     "Economato Geral": [
         "Índice de Sustentabilidade Econômica Missionária",
         "Percentual de membros que partilham a Comunhão de Bens",
-        "Resultado operacional do setor"
-    ],
-    "Assessoria Jovem": [
-        "Percentual de jovens na obra",
-        "Quantidade de jovens em missão por ano",
-        "Número de jovens que entram e permanecem nos grupos"
+        "Resultado financeiro de doações (Valor Absoluto)"
     ]
+    # Adicionaremos os demais conforme você validar
 }
 
-# 4. INTERFACE DO APP
-st.set_page_config(page_title="Lume Rev Global", layout="centered")
+# 4. CONFIGURAÇÃO DA PÁGINA
+st.set_page_config(page_title="Portal de Indicadores - Shalom", layout="centered")
 
-# Seletor de Idioma
-sel_lang = st.sidebar.selectbox("Language / Idioma", list(LANGUAGES.keys()))
+# Barra Lateral - Seleção de Idioma
+sel_lang = st.sidebar.selectbox("Idioma / Language", list(LANGUAGES.keys()))
 lang = LANGUAGES[sel_lang]
 
-st.title("Lume Rev")
-st.subheader("Global Indicators Portal")
+# Título Principal (Protagonismo Shalom)
+st.title("Portal de Indicadores Estratégicos")
+st.markdown("### Comunidade Católica Shalom")
 
-# Form de Entrada
-missao = st.text_input(lang["mission"], placeholder="Ex: Fortaleza, Roma...")
+# Campo de Missão (Aguardando sua lista para virar Selectbox)
+missao = st.text_input(lang["mission"], placeholder="Ex: Fortaleza, Roma, Berlin...")
+
+# Seleção de Setor e Indicador
 setor_pt = st.selectbox(lang["sector"], list(DADOS_ESTRATEGICOS.keys()))
 indicador_pt = st.selectbox(lang["ind"], DADOS_ESTRATEGICOS[setor_pt])
 
-# Lógica de tipo de dado
-is_percent = any(w in indicador_pt.lower() for w in ["taxa", "percentual", "porcentagem", "índice", "iqsa", "iqv"])
+# Lógica de Input
+is_percent = any(w in indicador_pt.lower() for w in ["taxa", "percentual", "porcentagem", "índice", "iqsa"])
 
 if is_percent:
     valor = st.number_input(f"{lang['val']} (%)", min_value=0.0, max_value=100.0, step=0.1, format="%.1f")
@@ -186,9 +79,10 @@ else:
     valor = st.number_input(f"{lang['val']}", min_value=0, step=1)
     tipo_dado = "absoluto"
 
-confianca = st.select_slider(lang["conf"], options=["Baixo", "Médio", "Alto"])
+# Nível de Confiança do Dado
+confianca = st.selectbox(lang["conf"], CONFIDENCE_OPTIONS[sel_lang])
 
-# 5. ENVIO PARA O SUPABASE
+# 5. BOTÃO DE ENVIO
 if st.button(lang["btn"]):
     payload = {
         "missao": missao,
@@ -204,4 +98,8 @@ if st.button(lang["btn"]):
         supabase.table("historico_indicadores").insert(payload).execute()
         st.success(lang["msg"])
     except Exception as e:
-        st.error(f"Erro: {e}")
+        st.error(f"Erro ao salvar: {e}")
+
+# Rodapé com assinatura da Consultoria (Lume Rev)
+st.markdown("---")
+st.caption("Implementado por Lume Rev Consultoria Estratégica")
