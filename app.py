@@ -1,88 +1,149 @@
 import streamlit as st
 from supabase import create_client, Client
 
-# 1. CONEXÃO
+# 1. CONEXÃO (Mantenha suas chaves reais)
 SUPABASE_URL = "https://dhvekggpufraioiyszle.supabase.co"
 SUPABASE_KEY = "SUA_API_KEY_AQUI" 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# 2. DICIONÁRIO DE TRADUÇÃO DA INTERFACE E DOS SETORES
+# 2. INTERFACE MULTILÍNGUE
 LANGUAGES = {
-    "Português": {
-        "mission": "Missão / Regional", "sector": "Setor Responsável", "ind": "Indicador", "val": "Valor", "conf": "Confiança", "btn": "Salvar", "msg": "Sucesso!",
-        "setores": ["Assistência Missionária (Geral)", "Coordenação Apostólica (Missão)", "PJJ - Projeto Juventude (Missão)", "Secretaria Vocacional (Missão)", "Economato Local (Missão)", "Setores Produtivos"]
-    },
-    "English": {
-        "mission": "Mission / Region", "sector": "Responsible Sector", "ind": "Indicator", "val": "Value", "conf": "Confidence", "btn": "Save", "msg": "Success!",
-        "setores": ["Missionary Assistance (General)", "Apostolic Coordination (Mission)", "PJJ - Youth Project (Mission)", "Vocational Secretary (Mission)", "Local Finance (Mission)", "Productive Sectors"]
-    },
-    "Español": {
-        "mission": "Misión / Regional", "sector": "Sector Responsable", "ind": "Indicador", "val": "Valor", "conf": "Confianza", "btn": "Guardar", "msg": "¡Éxito!",
-        "setores": ["Asistencia Misionera (General)", "Coordinación Apostólica (Misión)", "PJJ - Proyecto Juventud (Misión)", "Secretaría Vocacional (Misión)", "Economía Local (Misión)", "Sectores Productivos"]
-    },
-    "Italiano": {
-        "mission": "Missione", "sector": "Settore Responsabile", "ind": "Indicatore", "val": "Valore", "conf": "Fiducia", "btn": "Salvare", "msg": "Successo!",
-        "setores": ["Assistenza Missionaria (Generale)", "Coordinamento Apostolico (Missione)", "PJJ - Progetto Gioventù (Missione)", "Segreteria Vocazionale (Missione)", "Economato Locale (Missione)", "Settori Produttivi"]
-    },
-    "Français": {
-        "mission": "Mission", "sector": "Secteur Responsable", "ind": "Indicateur", "val": "Valeur", "conf": "Confiance", "btn": "Enregistrer", "msg": "Succès!",
-        "setores": ["Assistance Missionnaire (Générale)", "Coordination Apostolique (Mission)", "PJJ - Projet Jeunesse (Mission)", "Secrétariat Vocationnel (Mission)", "Économat Local (Mission)", "Secteurs Productifs"]
-    },
-    "Deutsch": {
-        "mission": "Mission", "sector": "Bereich", "ind": "Indikator", "val": "Wert", "conf": "Vertrauen", "btn": "Speichern", "msg": "Erfolgreich!",
-        "setores": ["Missionarische Assistenz (Allgemein)", "Apostolische Koordination (Mission)", "PJJ - Jugendprojekt (Mission)", "Berufungssekretariat (Mission)", "Lokale Finanzen (Mission)", "Produktive Bereiche"]
-    }
+    "Português": {"mission": "Missão / Regional", "sector": "Setor Responsável", "ind": "Indicador", "val": "Valor", "conf": "Confiança do Dado", "btn": "Salvar Dados", "msg": "Dados salvos com sucesso!"},
+    "English": {"mission": "Mission / Regional", "sector": "Responsible Sector", "ind": "Indicator", "val": "Value", "conf": "Data Confidence", "btn": "Save Data", "msg": "Success!"},
+    "Italiano": {"mission": "Missione", "sector": "Settore", "ind": "Indicatore", "val": "Valore", "conf": "Fiducia", "btn": "Salvare", "msg": "Successo!"},
+    "Español": {"mission": "Misión", "sector": "Sector", "ind": "Indicador", "val": "Valor", "conf": "Confianza", "btn": "Guardar", "msg": "Éxito!"},
+    "Français": {"mission": "Mission", "sector": "Secteur", "ind": "Indicateur", "val": "Valeur", "conf": "Confiance", "btn": "Enregistrer", "msg": "Succès!"},
+    "Deutsch": {"mission": "Mission", "sector": "Bereich", "ind": "Indikator", "val": "Wert", "conf": "Vertrauen", "btn": "Speichern", "msg": "Erfolgreich!"}
 }
 
-# 3. BASE DE DADOS (Chaves sempre em Português para o Looker)
-INDICADORES_BASE = {
-    "Assistência Missionária (Geral)": ["Taxa de crescimento de difusões", "Índice de consolidação regional", "IQSA"],
-    "Coordenação Apostólica (Missão)": ["Número de membros no grupo de oração", "Taxa de permanência (6 meses)", "Engajamento em ministérios"],
-    "PJJ - Projeto Juventude (Missão)": ["Percentual de jovens na obra", "Quantidade de jovens em missão por ano"],
-    "Secretaria Vocacional (Missão)": ["Taxa de Crescimento de Ingressos", "Índice de Qualidade Vocacional (IQV)"],
-    "Economato Local (Missão)": ["Resultado Operacional", "Membros na Comunhão de Bens"],
-    "Setores Produtivos": ["Margem de contribuição (%)", "Taxa de crescimento do faturamento (%)"]
+CONFIDENCE_OPTIONS = {
+    "Português": ["Auditado (Sistema)", "Planilha de Controle", "Estimativa / Manual"],
+    "English": ["Audited (System)", "Control Spreadsheet", "Estimation / Manual"],
+    "Italiano": ["Auditato (Sistema)", "Foglio di Calcolo", "Stima / Manuale"],
+    "Español": ["Auditado (Sistema)", "Planilla de Control", "Estimación / Manual"],
+    "Français": ["Audité (Système)", "Feuille de Calcul", "Estimation / Manuel"],
+    "Deutsch": ["Geprüft (System)", "Kontrollblatt", "Schätzung / Manuell"]
 }
 
-# CONFIGURAÇÃO DA PÁGINA
-st.set_page_config(page_title="Portal Shalom", layout="centered")
+# 3. MAPEAMENTO INTEGRAL DE TODOS OS INDICADORES (Hierarquia Missão vs Geral)
+DADOS_ESTRATEGICOS = {
+    "Assistência Missionária (Geral)": [
+        "Taxa de crescimento de difusões em novas dioceses", "Taxa de fundações em novas dioceses",
+        "Percentual da abertura de novas irradiações", "Evolução Média de Competência em Gestão",
+        "Índice de consolidação regional", "IQSA (Índice de Qualidade do Serviço de Autoridade)",
+        "Taxa de Execução do PDI (RLs)", "Percentual de Execução do Plano de Capacitações",
+        "Índice de efetivação de novas autoridades", "Relação Eclesial com Bispos"
+    ],
+    "Coordenação Apostólica (Missão)": [
+        "Aumento de pessoas alcançadas (Querigma)", "Número de membros no grupo de oração",
+        "Taxa de permanência (6 meses)", "Percentual de pessoas acompanhadas nos G.O.",
+        "Percentual de pessoas engajadas em ministérios", "Taxa de acolhimento nos CEVs",
+        "Índice de engajamento integral dos membros", "Satisfação dos participantes do evento",
+        "Novas iniciativas evangelizadoras", "Média da frequência de acompanhamento pessoal"
+    ],
+    "Projeto Juventude - PJJ (Missão)": [
+        "Percentual de jovens na obra", "Índice de alcance jovem (Comshalom)",
+        "Índice de qualidade dos eventos", "Crescimento de participantes em eventos",
+        "Jovens que entram e permanecem nos G.O.", "Quantidade de jovens em missão por ano",
+        "Atividades querigmáticas voltadas aos pobres"
+    ],
+    "Secretaria Vocacional (Missão)": [
+        "Taxa de Crescimento no Número de Ingressos", "Índice de Qualidade Vocacional (IQV)",
+        "Permanência até Promessas Definitivas"
+    ],
+    "Promoção Humana (Missão)": [
+        "Crescimento de pessoas assistidas / reintegradas", "Casas de PH e missões com serviços fora do Brasil",
+        "Percentual de Expedições realizadas"
+    ],
+    "Comunicação (Missão)": [
+        "Tempo dedicado ao acolhimento digital", "Tempo médio de engajamento no Portal",
+        "Satisfação do Serviço de Comunicação", "Índice de Treinamentos de Evangelização Digital"
+    ],
+    "Colegiado / Formação (Missão)": [
+        "Adesão das ofertas formativas", "Acompanhamento Comunitário (AC) trimestral",
+        "Irmãos que vivem os compromissos oracionais", "Engajamento da CAL",
+        "Aplicação do novo modelo de atualização da CAL", "Celeiro de autoridades para a CAL"
+    ],
+    "Instituto Parresia": [
+        "Crescimento de público em cursos presenciais", "Crescimento de alunos ativos",
+        "Etapas executadas do projeto da Faculdade", "Membros da CV com Ensino Superior"
+    ],
+    "Responsável Local - RL (Missão)": [
+        "Número de participantes em eventos formativos", "Contribuição dos setores produtivos na receita",
+        "Índice de matrícula/permanência Colégio Shalom", "Avaliação geral dos CEVs"
+    ],
+    "Economato Local (Missão)": [
+        "Sustentabilidade Econômica Missionária", "Resultado Operacional do Setor",
+        "Contribuição para a Missão", "Membros na Comunhão de Bens",
+        "Regularidade na prestação de contas", "Prática fiscal de comércio e serviço",
+        "Resultado financeiro de doações (Valor Absoluto)", "Base Patrimonial Regularizada"
+    ],
+    "Secretaria Comunitária (Missão)": [
+        "Pagamento do ordinário e dívida (Previdência)", "Índice de vivência da Unidade da CAL",
+        "Membros assistidos por planos de saúde", "Índice de Qualidade de Vida Comunitária (IQVC)"
+    ],
+    "Tecnologia e Planejamento": [
+        "Processos integrados ao sistema WOP", "Maturidade em gestão de dados",
+        "Implantação do sistema integrado de gestão", "Satisfação com processos institucionais"
+    ],
+    "Celibatários / Famílias": [
+        "Celibatários CAL que estão ou foram em missão", "Celibatários nos níveis vocacionais 1 e 2",
+        "Casais/Noivos nos níveis vocacionais 1 e 2", "Índice de Consolidação Matrimonial"
+    ],
+    "Sacerdotes e Seminaristas": [
+        "Qualidade da vida de oração e litúrgica", "Proporção nos níveis vocacionais 1 e 2"
+    ],
+    "Setores Produtivos (Livraria/Lanchonete)": [
+        "Margem de contribuição (%)", "Taxa de crescimento do faturamento (%)"
+    ]
+}
 
-# Seleção de Idioma na Sidebar
+# 4. CONFIGURAÇÃO DA PÁGINA
+st.set_page_config(page_title="Portal de Indicadores - Shalom", layout="centered", page_icon="📈")
+
+# Sidebar
 sel_lang = st.sidebar.selectbox("Language / Idioma", list(LANGUAGES.keys()))
-lang_dict = LANGUAGES[sel_lang]
+lang = LANGUAGES[sel_lang]
 
 st.title("Portal de Indicadores")
-st.subheader("Comunidade Católica Shalom")
+st.markdown("### Comunidade Católica Shalom")
 
-# CAMPOS TRADUZIDOS VISUALMENTE
-missao = st.text_input(lang_dict["mission"])
+# Entrada da Missão
+missao = st.text_input(lang["mission"], placeholder="Ex: Parangaba - Fortaleza")
 
-# 1. Seleção do Setor (Mostra traduzido, mas mapeia para o PT)
-lista_setores_traduzidos = lang_dict["setores"]
-setor_selecionado_traduzido = st.selectbox(lang_dict["sector"], lista_setores_traduzidos)
+# Dropdowns
+setor_pt = st.selectbox(lang["sector"], list(DADOS_ESTRATEGICOS.keys()))
+indicador_pt = st.selectbox(lang["ind"], DADOS_ESTRATEGICOS[setor_pt])
 
-# Descobre qual é o índice do setor selecionado para pegar a chave em PT
-idx_setor = lista_setores_traduzidos.index(setor_selecionado_traduzido)
-setor_chave_pt = list(INDICADORES_BASE.keys())[idx_setor]
+# Lógica de tipo de dado (Identifica automaticamente se é % ou Número)
+is_percent = any(w in indicador_pt.lower() for w in ["taxa", "percentual", "porcentagem", "índice", "iqsa", "iqv", "margem", "evolução"])
 
-# 2. Seleção do Indicador
-indicador_pt = st.selectbox(lang_dict["ind"], INDICADORES_BASE[setor_chave_pt])
+if is_percent:
+    valor = st.number_input(f"{lang['val']} (%)", min_value=0.0, max_value=500.0, step=0.1, format="%.1f")
+    tipo_dado = "percentual"
+else:
+    valor = st.number_input(lang["val"], min_value=0, step=1)
+    tipo_dado = "absoluto"
 
-# Valor e Confiança
-valor = st.number_input(lang_dict["val"], min_value=0.0)
-confianca = st.selectbox(lang_dict["conf"], ["Auditado", "Planilha", "Manual"])
+confianca = st.selectbox(lang["conf"], CONFIDENCE_OPTIONS[sel_lang])
 
-# ENVIO
-if st.button(lang_dict["btn"]):
+# 5. SALVAMENTO
+if st.button(lang["btn"]):
     payload = {
         "missao": missao,
-        "setor": setor_chave_pt, # Salva em PT para o Looker
+        "setor": setor_pt,
         "indicador": indicador_pt,
         "valor": valor,
+        "tipo_dado": tipo_dado,
+        "confianca": confianca,
         "idioma_preenchimento": sel_lang
     }
+    
     try:
         supabase.table("historico_indicadores").insert(payload).execute()
-        st.success(lang_dict["msg"])
+        st.success(lang["msg"])
     except Exception as e:
         st.error(f"Erro: {e}")
+
+st.markdown("---")
+st.caption("Implementado por Lume Rev Consultoria Estratégica")
