@@ -115,3 +115,93 @@ with st.form("workflow_v1"):
 # --- RODAPÉ ESTRATÉGICO ---
 st.sidebar.markdown("---")
 st.sidebar.info(f"**Lume Rev Strategy**\n\nEste portal alimenta automaticamente as projeções de 5 anos no Looker Studio.")
+import streamlit as st
+from supabase import create_client, Client
+
+# 1. CONEXÃO (Substitua pela sua KEY real que você já usou antes)
+SUPABASE_URL = "https://dhvekggpufraioiyszle.supabase.co"
+SUPABASE_KEY = "SUA_API_KEY_AQUI" 
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# 2. DICIONÁRIO MULTILÍNGUE (A "Pele" do App)
+LANGUAGES = {
+    "Português": {"mission": "Missão", "sector": "Setor Responsável", "ind": "Indicador", "val": "Valor", "conf": "Confiança", "btn": "Salvar", "msg": "Sucesso!"},
+    "English": {"mission": "Mission", "sector": "Responsible Sector", "ind": "Indicator", "val": "Value", "conf": "Confidence", "btn": "Save", "msg": "Success!"},
+    "Italiano": {"mission": "Missione", "sector": "Settore Responsabile", "ind": "Indicatore", "val": "Valore", "conf": "Fiducia", "btn": "Salvare", "msg": "Successo!"},
+    "Español": {"mission": "Misión", "sector": "Sector Responsable", "ind": "Indicador", "val": "Valor", "conf": "Confianza", "btn": "Guardar", "msg": "¡Éxito!"},
+    "Français": {"mission": "Mission", "sector": "Secteur Responsable", "ind": "Indicateur", "val": "Valeur", "conf": "Confiance", "btn": "Enregistrer", "msg": "Succès!"},
+    "Deutsch": {"mission": "Mission", "sector": "Zuständiger Sektor", "ind": "Indikator", "val": "Wert", "conf": "Vertrauen", "btn": "Speichern", "msg": "Erfolgreich!"}
+}
+
+# 3. BASE DE INDICADORES (O "Coração" - Sempre em PT para o Looker)
+DADOS_ESTRATEGICOS = {
+    "Assistência Missionária": [
+        "Taxa de crescimento de difusões em novas dioceses",
+        "Taxa de fundações em novas dioceses",
+        "Percentual da abertura de novas irradiações nas missões",
+        "Evolução Média de Competência em Gestão Estratégica",
+        "Índice de consolidação regional",
+        "IQSA (Índice de Qualidade do Serviço de Autoridade)"
+    ],
+    "Assistência Apostólica": [
+        "Percentual de aumento de pessoas alcançadas (Querigma)",
+        "Número de membros no grupo de oração",
+        "Taxa de permanência dos ingressantes após 6 meses",
+        "Percentual de pessoas engajadas em ministérios"
+    ],
+    "Economato Geral": [
+        "Índice de Sustentabilidade Econômica Missionária",
+        "Percentual de membros que partilham a Comunhão de Bens",
+        "Resultado operacional do setor"
+    ],
+    "Assessoria Jovem": [
+        "Percentual de jovens na obra",
+        "Quantidade de jovens em missão por ano",
+        "Número de jovens que entram e permanecem nos grupos"
+    ]
+}
+
+# 4. INTERFACE DO APP
+st.set_page_config(page_title="Lume Rev Global", layout="centered")
+
+# Seletor de Idioma
+sel_lang = st.sidebar.selectbox("Language / Idioma", list(LANGUAGES.keys()))
+lang = LANGUAGES[sel_lang]
+
+st.title("Lume Rev")
+st.subheader("Global Indicators Portal")
+
+# Form de Entrada
+missao = st.text_input(lang["mission"], placeholder="Ex: Fortaleza, Roma...")
+setor_pt = st.selectbox(lang["sector"], list(DADOS_ESTRATEGICOS.keys()))
+indicador_pt = st.selectbox(lang["ind"], DADOS_ESTRATEGICOS[setor_pt])
+
+# Lógica de tipo de dado
+is_percent = any(w in indicador_pt.lower() for w in ["taxa", "percentual", "porcentagem", "índice", "iqsa", "iqv"])
+
+if is_percent:
+    valor = st.number_input(f"{lang['val']} (%)", min_value=0.0, max_value=100.0, step=0.1, format="%.1f")
+    tipo_dado = "percentual"
+else:
+    valor = st.number_input(f"{lang['val']}", min_value=0, step=1)
+    tipo_dado = "absoluto"
+
+confianca = st.select_slider(lang["conf"], options=["Baixo", "Médio", "Alto"])
+
+# 5. ENVIO PARA O SUPABASE
+if st.button(lang["btn"]):
+    payload = {
+        "missao": missao,
+        "setor": setor_pt,
+        "indicador": indicador_pt,
+        "valor": valor,
+        "tipo_dado": tipo_dado,
+        "confianca": confianca,
+        "idioma_preenchimento": sel_lang
+    }
+    
+    try:
+        supabase.table("historico_indicadores").insert(payload).execute()
+        st.success(lang["msg"])
+    except Exception as e:
+        st.error(f"Erro: {e}")
