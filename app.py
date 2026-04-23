@@ -1,4 +1,4 @@
-# Your new app.py content goes import streamlit as st
+import streamlit as st
 from supabase import create_client, Client
 
 # 1. CONEXÃO (Coloque suas chaves aqui)
@@ -115,5 +115,3 @@ if st.button(lang["btn"]):
 
 st.markdown("---")
 st.caption("Developed by Lume Rev Consultoria")
-
-# Ensure this matches the intended functionality and structure.
