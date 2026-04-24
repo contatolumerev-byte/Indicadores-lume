@@ -7,18 +7,39 @@ SUPABASE_URL = "https://dhvekggpufraioiyszle.supabase.co"
 SUPABASE_KEY = "SUA_API_KEY_AQUI" 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# 2. MAPEAMENTO MULTILÍNGUE
+# 2. FUNÇÃO PARA DETECTAR FORMATO DO INDICADOR
+def detect_indicator_format(indicator_name):
+    """
+    Detecta o formato do indicador baseado no nome
+    % = Taxa, Percentual, Índice, Porcentagem, Margem
+    # = Número, Quantidade
+    $ = Resultado, Valor, Financeiro
+    """
+    indicator_lower = indicator_name.lower()
+    
+    if any(word in indicator_lower for word in ["taxa", "percentual", "índice", "porcentagem", "margem", "proporção"]):
+        return "%"
+    elif any(word in indicator_lower for word in ["número", "quantidade"]):
+        return "#"
+    elif any(word in indicator_lower for word in ["resultado", "valor", "financeiro"]):
+        return "$"
+    else:
+        return "%"  # Default para porcentagem
+
+# 3. MAPEAMENTO MULTILÍNGUE
 TRANSLATIONS = {
     "Português": {
         "title": "Portal de Indicadores Estratégicos",
         "subtitle": "Comunidade Católica Shalom",
         "mission_label": "Missão / Regional",
+        "year_label": "Ano",
         "sector_label": "Assessoria / Assistência",
         "indicator_label": "Indicador",
         "val_label": "Valor",
         "conf_label": "Confiança do Dado",
         "btn_save": "Salvar Dados",
         "msg_success": "Dados salvos com sucesso!",
+        "confidence_options": ["Sistema", "Planilha", "Chute/Estimativa"],
         "sectors": {
             "Assistência Missionária": "Assistência Missionária",
             "Assistência Apostólica": "Assistência Apostólica",
@@ -40,23 +61,20 @@ TRANSLATIONS = {
             "Setor dos Celibatários": "Setor dos Celibatários",
             "Setor Família": "Setor Família",
             "Secretaria de Setores Produtivos": "Secretaria de Setores Produtivos"
-        },
-        "confidence": {
-            "Auditado": "Auditado",
-            "Planilha": "Planilha",
-            "Estimativa": "Estimativa"
         }
     },
     "English": {
         "title": "Strategic Indicators Portal",
         "subtitle": "Shalom Catholic Community",
         "mission_label": "Mission / Region",
+        "year_label": "Year",
         "sector_label": "Department / Assistance",
         "indicator_label": "Indicator",
         "val_label": "Value",
         "conf_label": "Data Confidence",
         "btn_save": "Save Data",
         "msg_success": "Data saved successfully!",
+        "confidence_options": ["System", "Spreadsheet", "Guess/Estimate"],
         "sectors": {
             "Assistência Missionária": "Missionary Assistance",
             "Assistência Apostólica": "Apostolic Assistance",
@@ -78,23 +96,20 @@ TRANSLATIONS = {
             "Setor dos Celibatários": "Celibate Sector",
             "Setor Família": "Family Sector",
             "Secretaria de Setores Produtivos": "Productive Sectors Secretariat"
-        },
-        "confidence": {
-            "Auditado": "Audited",
-            "Planilha": "Spreadsheet",
-            "Estimativa": "Estimate"
         }
     },
     "Español": {
         "title": "Portal de Indicadores Estratégicos",
         "subtitle": "Comunidad Católica Shalom",
         "mission_label": "Misión / Regional",
+        "year_label": "Año",
         "sector_label": "Departamento / Asistencia",
         "indicator_label": "Indicador",
         "val_label": "Valor",
         "conf_label": "Confianza de los Datos",
         "btn_save": "Guardar Datos",
         "msg_success": "¡Datos guardados con éxito!",
+        "confidence_options": ["Sistema", "Hoja de cálculo", "Estimación"],
         "sectors": {
             "Assistência Missionária": "Asistencia Misionera",
             "Assistência Apostólica": "Asistencia Apostólica",
@@ -116,23 +131,20 @@ TRANSLATIONS = {
             "Setor dos Celibatários": "Sector de Célibes",
             "Setor Família": "Sector Familiar",
             "Secretaria de Setores Produtivos": "Secretaría de Sectores Productivos"
-        },
-        "confidence": {
-            "Auditado": "Auditado",
-            "Planilha": "Hoja de cálculo",
-            "Estimativa": "Estimación"
         }
     },
     "Italiano": {
         "title": "Portale degli Indicatori Strategici",
         "subtitle": "Comunità Cattolica Shalom",
         "mission_label": "Missione / Regione",
+        "year_label": "Anno",
         "sector_label": "Dipartimento / Assistenza",
         "indicator_label": "Indicatore",
         "val_label": "Valore",
         "conf_label": "Fiducia dei Dati",
         "btn_save": "Salva Dati",
         "msg_success": "Dati salvati con successo!",
+        "confidence_options": ["Sistema", "Foglio di calcolo", "Stima"],
         "sectors": {
             "Assistência Missionária": "Assistenza Missionaria",
             "Assistência Apostólica": "Assistenza Apostolica",
@@ -154,23 +166,20 @@ TRANSLATIONS = {
             "Setor dos Celibatários": "Settore dei Celibi",
             "Setor Família": "Settore Famiglia",
             "Secretaria de Setores Produtivos": "Segreteria dei Settori Produttivi"
-        },
-        "confidence": {
-            "Auditado": "Revisionato",
-            "Planilha": "Foglio di calcolo",
-            "Estimativa": "Stima"
         }
     },
     "Français": {
         "title": "Portail des Indicateurs Stratégiques",
         "subtitle": "Communauté Catholique Shalom",
         "mission_label": "Mission / Région",
+        "year_label": "Année",
         "sector_label": "Département / Assistance",
         "indicator_label": "Indicateur",
         "val_label": "Valeur",
         "conf_label": "Confiance des Données",
         "btn_save": "Enregistrer les Données",
         "msg_success": "Données enregistrées avec succès!",
+        "confidence_options": ["Système", "Feuille de calcul", "Estimation"],
         "sectors": {
             "Assistência Missionária": "Assistance Missionnaire",
             "Assistência Apostólica": "Assistance Apostolique",
@@ -192,23 +201,20 @@ TRANSLATIONS = {
             "Setor dos Celibatários": "Secteur des Célibataires",
             "Setor Família": "Secteur Famille",
             "Secretaria de Setores Produtivos": "Secrétariat des Secteurs Productifs"
-        },
-        "confidence": {
-            "Auditado": "Audité",
-            "Planilha": "Feuille de calcul",
-            "Estimativa": "Estimation"
         }
     },
     "Deutsch": {
         "title": "Portal der strategischen Indikatoren",
         "subtitle": "Shalom Katholische Gemeinschaft",
         "mission_label": "Mission / Region",
+        "year_label": "Jahr",
         "sector_label": "Abteilung / Hilfe",
         "indicator_label": "Indikator",
         "val_label": "Wert",
         "conf_label": "Datenvertrauen",
         "btn_save": "Daten Speichern",
         "msg_success": "Daten erfolgreich gespeichert!",
+        "confidence_options": ["System", "Tabellenkalkulation", "Schätzung"],
         "sectors": {
             "Assistência Missionária": "Missionarische Hilfe",
             "Assistência Apostólica": "Apostolische Hilfe",
@@ -230,16 +236,11 @@ TRANSLATIONS = {
             "Setor dos Celibatários": "Sektor der Unverheirateten",
             "Setor Família": "Familiensektor",
             "Secretaria de Setores Produtivos": "Sekretariat der Produktiven Sektoren"
-        },
-        "confidence": {
-            "Auditado": "Geprüft",
-            "Planilha": "Tabellenkalkulation",
-            "Estimativa": "Schätzung"
         }
     }
 }
 
-# 3. ESTRUTURA DO BANCO (chaves em Português)
+# 4. ESTRUTURA DO BANCO (chaves em Português)
 DB_STRUCTURE_PT = {
     "Assistência Missionária": [
         "Taxa de crescimento de difusões em novas dioceses",
@@ -530,12 +531,15 @@ st.title(t["title"])
 st.subheader(t["subtitle"])
 st.markdown("---")
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
     missao = st.text_input(t["mission_label"])
 
 with col2:
+    ano = st.selectbox(t["year_label"], [2024, 2025, 2026])
+
+with col3:
     # SELEÇÃO DE SETOR/ASSISTÊNCIA
     setores_pt_keys = list(DB_STRUCTURE_PT.keys())
     setores_display = [t["sectors"][setor_pt] for setor_pt in setores_pt_keys]
@@ -554,25 +558,65 @@ idx_ind = st.selectbox(t["indicator_label"], range(len(indicadores_display)),
                        format_func=lambda x: indicadores_display[x])
 indicador_pt = DB_STRUCTURE_PT[setor_pt][idx_ind]
 
-# VALOR E CONFIANÇA
-col3, col4 = st.columns(2)
+# Detectar formato do indicador
+formato = detect_indicator_format(indicador_pt)
 
-with col3:
-    valor = st.number_input(t["val_label"], min_value=0.0, step=0.1)
+# VALOR (com formato apropriado)
+col4, col5 = st.columns(2)
 
 with col4:
-    confianca_keys = list(t["confidence"].keys())
-    idx_conf = st.selectbox(t["conf_label"], range(len(confianca_keys)), 
-                            format_func=lambda x: t["confidence"][confianca_keys[x]])
-    confianca_pt = confianca_keys[idx_conf]
+    if formato == "%":
+        valor = st.number_input(t["val_label"] + " (%)", min_value=0.0, max_value=100.0, step=0.1)
+    elif formato == "#":
+        valor = st.number_input(t["val_label"] + " (#)", min_value=0, step=1)
+    else:  # $
+        valor = st.number_input(t["val_label"] + " ($)", min_value=0.0, step=0.01)
+
+with col5:
+    # CONFIANÇA
+    confianca_keys = t["confidence_options"]
+    confianca_pt_map = {
+        "Sistema": "Sistema",
+        "Planilha": "Planilha",
+        "Chute/Estimativa": "Chute/Estimativa",
+        "System": "Sistema",
+        "Spreadsheet": "Planilha",
+        "Guess/Estimate": "Chute/Estimativa",
+        "Sistema": "Sistema",
+        "Hoja de cálculo": "Planilha",
+        "Estimación": "Chute/Estimativa",
+        "Sistema": "Sistema",
+        "Foglio di calcolo": "Planilha",
+        "Stima": "Chute/Estimativa",
+        "Système": "Sistema",
+        "Feuille de calcul": "Planilha",
+        "Estimation": "Chute/Estimativa",
+        "System": "Sistema",
+        "Tabellenkalkulation": "Planilha",
+        "Schätzung": "Chute/Estimativa"
+    }
+    
+    confianca_idx = st.selectbox(t["conf_label"], range(len(confianca_keys)), 
+                                format_func=lambda x: confianca_keys[x])
+    confianca_pt = confianca_pt_map.get(confianca_keys[confianca_idx], confianca_keys[confianca_idx])
 
 # BOTÃO SALVAR
 if st.button(t["btn_save"], use_container_width=True):
+    # Formatar valor conforme tipo
+    if formato == "%":
+        valor_formatado = f"{valor}%"
+    elif formato == "#":
+        valor_formatado = str(int(valor))
+    else:  # $
+        valor_formatado = f"{valor:.2f}"
+    
     payload = {
         "missao": missao,
+        "ano": ano,
         "assessoria_assistencia": setor_pt,
         "indicador": indicador_pt,
-        "valor": valor,
+        "valor": valor_formatado,
+        "formato": formato,
         "confianca": confianca_pt,
         "idioma_preenchimento": sel_lang,
         "data_preenchimento": datetime.now().isoformat()
