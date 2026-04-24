@@ -7,7 +7,146 @@ SUPABASE_URL = "https://dhvekggpufraioiyszle.supabase.co"
 SUPABASE_KEY = "SUA_API_KEY_AQUI" 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# 2. FUNÇÃO PARA DETECTAR FORMATO DO INDICADOR
+# 2. ESTRUTURA DE MISSÕES POR REGIONAL
+MISSOES_PT = {
+    "Diaconia - Governo Geral": ["Fortaleza"],
+    
+    "Regional Brasil Nordeste I": [
+        "Teresina (Sede)",
+        "Crateús",
+        "Parnaíba",
+        "Itapipoca",
+        "Sobral",
+        "Aracati",
+        "Quixadá",
+        "São Luís",
+        "Imperatriz",
+        "Juazeiro do Norte"
+    ],
+    
+    "Regional Brasil Nordeste II": [
+        "Salvador (Sede)",
+        "Natal",
+        "Mossoró",
+        "Patos",
+        "Recife",
+        "Garanhuns",
+        "Maceió",
+        "Arapiraca",
+        "João Pessoa",
+        "Campina Grande",
+        "Juazeiro - BA",
+        "Vitória da Conquista/BA",
+        "Aracaju",
+        "Petrolina",
+        "Propriá",
+        "Senhor do Bonfim",
+        "Eunápolis"
+    ],
+    
+    "Regional Brasil Norte": [
+        "Belém (Sede)",
+        "Chaves",
+        "Cruzeiro do Sul",
+        "Macapá",
+        "Manaus"
+    ],
+    
+    "Regional Brasil Sudeste e Centro-Oeste": [
+        "Brasília (Sede)",
+        "Goiânia",
+        "Cuiabá",
+        "Campo Grande",
+        "Palmas",
+        "Rio de Janeiro",
+        "Niterói",
+        "Campos",
+        "Juiz de Fora",
+        "Vitória",
+        "Belo Horizonte",
+        "Patos de Minas",
+        "Uberaba"
+    ],
+    
+    "Regional Brasil São Paulo": [
+        "São Paulo (Sede)",
+        "Santo Amaro",
+        "Aparecida",
+        "Araraquara",
+        "Guarulhos",
+        "Santo André",
+        "Piracicaba"
+    ],
+    
+    "Regional Brasil Sul": [
+        "Curitiba (Sede)",
+        "Joinville",
+        "Florianópolis",
+        "Ponta Grossa",
+        "São Leopoldo"
+    ],
+    
+    "Regional América Hispânica": [
+        "Assunção (Sede)",
+        "Montevidéu",
+        "Sucre",
+        "Corrientes",
+        "Lima",
+        "Guayaquil",
+        "Bogotá",
+        "Santa Cruz de la Sierra",
+        "Cidade do Panamá",
+        "Santiago do Chile"
+    ],
+    
+    "Regional Europa": [
+        "Roma",
+        "Ferrara",
+        "Acqui Terme",
+        "Lugano",
+        "Granada",
+        "Braga",
+        "Setúbal",
+        "Lisboa",
+        "Toulon",
+        "Aix-en-Provence",
+        "Avignon",
+        "Guiana Francesa",
+        "Perpignan",
+        "Nice",
+        "Varsóvia",
+        "Cracóvia",
+        "Budapeste",
+        "Paderborn",
+        "Londres"
+    ],
+    
+    "Regional Ásia": [
+        "Haifa (Sede)",
+        "Nazaré",
+        "Manila (Filipinas)",
+        "Hsinchu (Taiwan)"
+    ],
+    
+    "Regional África": [
+        "Maputo (Sede)",
+        "Praia (Cabo Verde)",
+        "Lubango",
+        "Madagascar",
+        "Argel",
+        "Béjaia",
+        "Sfax",
+        "Tânger"
+    ],
+    
+    "Regional América do Norte": [
+        "Nova Iorque (Sede)",
+        "Boston",
+        "Toronto"
+    ]
+}
+
+# 3. FUNÇÃO PARA DETECTAR FORMATO DO INDICADOR
 def detect_indicator_format(indicator_name):
     """
     Detecta o formato do indicador baseado no nome
@@ -24,14 +163,15 @@ def detect_indicator_format(indicator_name):
     elif any(word in indicator_lower for word in ["resultado", "valor", "financeiro"]):
         return "$"
     else:
-        return "%"  # Default para porcentagem
+        return "%"
 
-# 3. MAPEAMENTO MULTILÍNGUE
+# 4. MAPEAMENTO MULTILÍNGUE
 TRANSLATIONS = {
     "Português": {
         "title": "Portal de Indicadores Estratégicos",
         "subtitle": "Comunidade Católica Shalom",
-        "mission_label": "Missão / Regional",
+        "regional_label": "Regional",
+        "mission_label": "Missão",
         "year_label": "Ano",
         "sector_label": "Assessoria / Assistência",
         "indicator_label": "Indicador",
@@ -40,6 +180,20 @@ TRANSLATIONS = {
         "btn_save": "Salvar Dados",
         "msg_success": "Dados salvos com sucesso!",
         "confidence_options": ["Sistema", "Planilha", "Chute/Estimativa"],
+        "regions": {
+            "Diaconia - Governo Geral": "Diaconia - Governo Geral",
+            "Regional Brasil Nordeste I": "Regional Brasil Nordeste I",
+            "Regional Brasil Nordeste II": "Regional Brasil Nordeste II",
+            "Regional Brasil Norte": "Regional Brasil Norte",
+            "Regional Brasil Sudeste e Centro-Oeste": "Regional Brasil Sudeste e Centro-Oeste",
+            "Regional Brasil São Paulo": "Regional Brasil São Paulo",
+            "Regional Brasil Sul": "Regional Brasil Sul",
+            "Regional América Hispânica": "Regional América Hispânica",
+            "Regional Europa": "Regional Europa",
+            "Regional Ásia": "Regional Ásia",
+            "Regional África": "Regional África",
+            "Regional América do Norte": "Regional América do Norte"
+        },
         "sectors": {
             "Assistência Missionária": "Assistência Missionária",
             "Assistência Apostólica": "Assistência Apostólica",
@@ -66,7 +220,8 @@ TRANSLATIONS = {
     "English": {
         "title": "Strategic Indicators Portal",
         "subtitle": "Shalom Catholic Community",
-        "mission_label": "Mission / Region",
+        "regional_label": "Region",
+        "mission_label": "Mission",
         "year_label": "Year",
         "sector_label": "Department / Assistance",
         "indicator_label": "Indicator",
@@ -75,6 +230,20 @@ TRANSLATIONS = {
         "btn_save": "Save Data",
         "msg_success": "Data saved successfully!",
         "confidence_options": ["System", "Spreadsheet", "Guess/Estimate"],
+        "regions": {
+            "Diaconia - Governo Geral": "Diaconia - General Government",
+            "Regional Brasil Nordeste I": "Brazil Northeast I Region",
+            "Regional Brasil Nordeste II": "Brazil Northeast II Region",
+            "Regional Brasil Norte": "Brazil North Region",
+            "Regional Brasil Sudeste e Centro-Oeste": "Brazil Southeast and Center-West Region",
+            "Regional Brasil São Paulo": "Brazil São Paulo Region",
+            "Regional Brasil Sul": "Brazil South Region",
+            "Regional América Hispânica": "Hispanic America Region",
+            "Regional Europa": "Europe Region",
+            "Regional Ásia": "Asia Region",
+            "Regional África": "Africa Region",
+            "Regional América do Norte": "North America Region"
+        },
         "sectors": {
             "Assistência Missionária": "Missionary Assistance",
             "Assistência Apostólica": "Apostolic Assistance",
@@ -101,7 +270,8 @@ TRANSLATIONS = {
     "Español": {
         "title": "Portal de Indicadores Estratégicos",
         "subtitle": "Comunidad Católica Shalom",
-        "mission_label": "Misión / Regional",
+        "regional_label": "Región",
+        "mission_label": "Misión",
         "year_label": "Año",
         "sector_label": "Departamento / Asistencia",
         "indicator_label": "Indicador",
@@ -110,6 +280,20 @@ TRANSLATIONS = {
         "btn_save": "Guardar Datos",
         "msg_success": "¡Datos guardados con éxito!",
         "confidence_options": ["Sistema", "Hoja de cálculo", "Estimación"],
+        "regions": {
+            "Diaconia - Governo Geral": "Diaconia - Gobierno General",
+            "Regional Brasil Nordeste I": "Región Noreste de Brasil I",
+            "Regional Brasil Nordeste II": "Región Noreste de Brasil II",
+            "Regional Brasil Norte": "Región Norte de Brasil",
+            "Regional Brasil Sudeste e Centro-Oeste": "Región Sureste y Centro-Oeste de Brasil",
+            "Regional Brasil São Paulo": "Región São Paulo de Brasil",
+            "Regional Brasil Sul": "Región Sur de Brasil",
+            "Regional América Hispânica": "Región América Hispánica",
+            "Regional Europa": "Región Europa",
+            "Regional Ásia": "Región Asia",
+            "Regional África": "Región África",
+            "Regional América do Norte": "Región América del Norte"
+        },
         "sectors": {
             "Assistência Missionária": "Asistencia Misionera",
             "Assistência Apostólica": "Asistencia Apostólica",
@@ -136,7 +320,8 @@ TRANSLATIONS = {
     "Italiano": {
         "title": "Portale degli Indicatori Strategici",
         "subtitle": "Comunità Cattolica Shalom",
-        "mission_label": "Missione / Regione",
+        "regional_label": "Regione",
+        "mission_label": "Missione",
         "year_label": "Anno",
         "sector_label": "Dipartimento / Assistenza",
         "indicator_label": "Indicatore",
@@ -145,6 +330,20 @@ TRANSLATIONS = {
         "btn_save": "Salva Dati",
         "msg_success": "Dati salvati con successo!",
         "confidence_options": ["Sistema", "Foglio di calcolo", "Stima"],
+        "regions": {
+            "Diaconia - Governo Geral": "Diaconia - Governo Generale",
+            "Regional Brasil Nordeste I": "Regione Nord-Est Brasile I",
+            "Regional Brasil Nordeste II": "Regione Nord-Est Brasile II",
+            "Regional Brasil Norte": "Regione Nord Brasile",
+            "Regional Brasil Sudeste e Centro-Oeste": "Regione Sud-Est e Centro-Ovest Brasile",
+            "Regional Brasil São Paulo": "Regione São Paulo Brasile",
+            "Regional Brasil Sul": "Regione Sud Brasile",
+            "Regional América Hispânica": "Regione America Ispanica",
+            "Regional Europa": "Regione Europa",
+            "Regional Ásia": "Regione Asia",
+            "Regional África": "Regione Africa",
+            "Regional América do Norte": "Regione America del Nord"
+        },
         "sectors": {
             "Assistência Missionária": "Assistenza Missionaria",
             "Assistência Apostólica": "Assistenza Apostolica",
@@ -171,7 +370,8 @@ TRANSLATIONS = {
     "Français": {
         "title": "Portail des Indicateurs Stratégiques",
         "subtitle": "Communauté Catholique Shalom",
-        "mission_label": "Mission / Région",
+        "regional_label": "Région",
+        "mission_label": "Mission",
         "year_label": "Année",
         "sector_label": "Département / Assistance",
         "indicator_label": "Indicateur",
@@ -180,6 +380,20 @@ TRANSLATIONS = {
         "btn_save": "Enregistrer les Données",
         "msg_success": "Données enregistrées avec succès!",
         "confidence_options": ["Système", "Feuille de calcul", "Estimation"],
+        "regions": {
+            "Diaconia - Governo Geral": "Diaconia - Gouvernement Général",
+            "Regional Brasil Nordeste I": "Région Nord-Est Brésil I",
+            "Regional Brasil Nordeste II": "Région Nord-Est Brésil II",
+            "Regional Brasil Norte": "Région Nord Brésil",
+            "Regional Brasil Sudeste e Centro-Oeste": "Région Sud-Est et Centre-Ouest Brésil",
+            "Regional Brasil São Paulo": "Région São Paulo Brésil",
+            "Regional Brasil Sul": "Région Sud Brésil",
+            "Regional América Hispânica": "Région Amérique Hispanique",
+            "Regional Europa": "Région Europe",
+            "Regional Ásia": "Région Asie",
+            "Regional África": "Région Afrique",
+            "Regional América do Norte": "Région Amérique du Nord"
+        },
         "sectors": {
             "Assistência Missionária": "Assistance Missionnaire",
             "Assistência Apostólica": "Assistance Apostolique",
@@ -206,7 +420,8 @@ TRANSLATIONS = {
     "Deutsch": {
         "title": "Portal der strategischen Indikatoren",
         "subtitle": "Shalom Katholische Gemeinschaft",
-        "mission_label": "Mission / Region",
+        "regional_label": "Region",
+        "mission_label": "Mission",
         "year_label": "Jahr",
         "sector_label": "Abteilung / Hilfe",
         "indicator_label": "Indikator",
@@ -215,6 +430,20 @@ TRANSLATIONS = {
         "btn_save": "Daten Speichern",
         "msg_success": "Daten erfolgreich gespeichert!",
         "confidence_options": ["System", "Tabellenkalkulation", "Schätzung"],
+        "regions": {
+            "Diaconia - Governo Geral": "Diaconia - Allgemeine Regierung",
+            "Regional Brasil Nordeste I": "Region Nordost-Brasilien I",
+            "Regional Brasil Nordeste II": "Region Nordost-Brasilien II",
+            "Regional Brasil Norte": "Region Nord-Brasilien",
+            "Regional Brasil Sudeste e Centro-Oeste": "Region Südosten und Mittenwesten Brasilien",
+            "Regional Brasil São Paulo": "Region São Paulo Brasilien",
+            "Regional Brasil Sul": "Region Süd-Brasilien",
+            "Regional América Hispânica": "Region Hispanoamerika",
+            "Regional Europa": "Region Europa",
+            "Regional Ásia": "Region Asien",
+            "Regional África": "Region Afrika",
+            "Regional América do Norte": "Region Nordamerika"
+        },
         "sectors": {
             "Assistência Missionária": "Missionarische Hilfe",
             "Assistência Apostólica": "Apostolische Hilfe",
@@ -240,7 +469,7 @@ TRANSLATIONS = {
     }
 }
 
-# 4. ESTRUTURA DO BANCO (chaves em Português)
+# 5. ESTRUTURA DO BANCO (chaves em Português)
 DB_STRUCTURE_PT = {
     "Assistência Missionária": [
         "Taxa de crescimento de difusões em novas dioceses",
@@ -534,12 +763,27 @@ st.markdown("---")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    missao = st.text_input(t["mission_label"])
+    # SELEÇÃO DE REGIONAL
+    regionais_pt_keys = list(MISSOES_PT.keys())
+    regionais_display = [t["regions"][regional_pt] for regional_pt in regionais_pt_keys]
+    
+    idx_regional = st.selectbox(t["regional_label"], range(len(regionais_display)), 
+                               format_func=lambda x: regionais_display[x])
+    regional_pt = regionais_pt_keys[idx_regional]
 
 with col2:
-    ano = st.selectbox(t["year_label"], [2024, 2025, 2026])
+    # SELEÇÃO DE MISSÃO (filtra conforme regional)
+    missoes_display = MISSOES_PT[regional_pt]
+    idx_missao = st.selectbox(t["mission_label"], range(len(missoes_display)), 
+                             format_func=lambda x: missoes_display[x])
+    missao_pt = missoes_display[idx_missao]
 
 with col3:
+    ano = st.selectbox(t["year_label"], [2024, 2025, 2026])
+
+col4, col5 = st.columns(2)
+
+with col4:
     # SELEÇÃO DE SETOR/ASSISTÊNCIA
     setores_pt_keys = list(DB_STRUCTURE_PT.keys())
     setores_display = [t["sectors"][setor_pt] for setor_pt in setores_pt_keys]
@@ -547,6 +791,9 @@ with col3:
     idx_setor = st.selectbox(t["sector_label"], range(len(setores_display)), 
                              format_func=lambda x: setores_display[x])
     setor_pt = setores_pt_keys[idx_setor]
+
+with col5:
+    pass  # Espaço vazio para alinhamento
 
 # SELEÇÃO DE INDICADOR (traduzido conforme idioma)
 if sel_lang in INDICATORS_TRANSLATIONS and setor_pt in INDICATORS_TRANSLATIONS[sel_lang]:
@@ -562,9 +809,9 @@ indicador_pt = DB_STRUCTURE_PT[setor_pt][idx_ind]
 formato = detect_indicator_format(indicador_pt)
 
 # VALOR (com formato apropriado)
-col4, col5 = st.columns(2)
+col6, col7 = st.columns(2)
 
-with col4:
+with col6:
     if formato == "%":
         valor = st.number_input(t["val_label"] + " (%)", min_value=0.0, max_value=100.0, step=0.1)
     elif formato == "#":
@@ -572,7 +819,7 @@ with col4:
     else:  # $
         valor = st.number_input(t["val_label"] + " ($)", min_value=0.0, step=0.01)
 
-with col5:
+with col7:
     # CONFIANÇA
     confianca_keys = t["confidence_options"]
     confianca_pt_map = {
@@ -611,7 +858,8 @@ if st.button(t["btn_save"], use_container_width=True):
         valor_formatado = f"{valor:.2f}"
     
     payload = {
-        "missao": missao,
+        "regional": regional_pt,
+        "missao": missao_pt,
         "ano": ano,
         "assessoria_assistencia": setor_pt,
         "indicador": indicador_pt,
