@@ -1,6 +1,7 @@
 import streamlit as st
 from supabase import create_client, Client
 from datetime import datetime
+import pandas as pd
 
 # 1. CONEXÃO
 SUPABASE_URL = "https://dhvekggpufraioiyszle.supabase.co"
@@ -178,8 +179,16 @@ TRANSLATIONS = {
         "val_label": "Valor",
         "conf_label": "Confiança do Dado",
         "btn_save": "Salvar Dados",
+        "btn_correct": "🔄 Corrigir",
+        "btn_history": "📋 Histórico",
+        "btn_confirm_correct": "✅ Confirmar Correção",
+        "btn_cancel": "❌ Cancelar",
         "msg_success": "Dados salvos com sucesso!",
+        "msg_success_correct": "✅ Correção registrada com sucesso!",
+        "msg_already_filled": "⚠️ Este indicador para {ano} já foi preenchido!",
+        "msg_pending": "✅ Este indicador está pendente. Pode preencher!",
         "confidence_options": ["Sistema", "Planilha", "Chute/Estimativa"],
+        "correction_reasons": ["Erro de Digitação", "Dado Atualizado", "Revisão de Dados", "Outro"],
         "regions": {
             "Diaconia - Governo Geral": "Diaconia - Governo Geral",
             "Regional Brasil Nordeste I": "Regional Brasil Nordeste I",
@@ -228,8 +237,16 @@ TRANSLATIONS = {
         "val_label": "Value",
         "conf_label": "Data Confidence",
         "btn_save": "Save Data",
+        "btn_correct": "🔄 Correct",
+        "btn_history": "📋 History",
+        "btn_confirm_correct": "✅ Confirm Correction",
+        "btn_cancel": "❌ Cancel",
         "msg_success": "Data saved successfully!",
+        "msg_success_correct": "✅ Correction recorded successfully!",
+        "msg_already_filled": "⚠️ This indicator for {ano} has already been filled!",
+        "msg_pending": "✅ This indicator is pending. You can fill it!",
         "confidence_options": ["System", "Spreadsheet", "Guess/Estimate"],
+        "correction_reasons": ["Typing Error", "Updated Data", "Data Review", "Other"],
         "regions": {
             "Diaconia - Governo Geral": "Diaconia - General Government",
             "Regional Brasil Nordeste I": "Brazil Northeast I Region",
@@ -278,8 +295,16 @@ TRANSLATIONS = {
         "val_label": "Valor",
         "conf_label": "Confianza de los Datos",
         "btn_save": "Guardar Datos",
+        "btn_correct": "🔄 Corregir",
+        "btn_history": "📋 Historial",
+        "btn_confirm_correct": "✅ Confirmar Corrección",
+        "btn_cancel": "❌ Cancelar",
         "msg_success": "¡Datos guardados con éxito!",
+        "msg_success_correct": "✅ ¡Corrección registrada con éxito!",
+        "msg_already_filled": "⚠️ ¡Este indicador para {ano} ya ha sido completado!",
+        "msg_pending": "✅ Este indicador está pendiente. ¡Puede rellenarlo!",
         "confidence_options": ["Sistema", "Hoja de cálculo", "Estimación"],
+        "correction_reasons": ["Error de Tipeo", "Dato Actualizado", "Revisión de Datos", "Otro"],
         "regions": {
             "Diaconia - Governo Geral": "Diaconia - Gobierno General",
             "Regional Brasil Nordeste I": "Región Noreste de Brasil I",
@@ -328,8 +353,16 @@ TRANSLATIONS = {
         "val_label": "Valore",
         "conf_label": "Fiducia dei Dati",
         "btn_save": "Salva Dati",
+        "btn_correct": "🔄 Correggi",
+        "btn_history": "📋 Storico",
+        "btn_confirm_correct": "✅ Conferma Correzione",
+        "btn_cancel": "❌ Annulla",
         "msg_success": "Dati salvati con successo!",
+        "msg_success_correct": "✅ Correzione registrata con successo!",
+        "msg_already_filled": "⚠️ Questo indicatore per {ano} è già stato compilato!",
+        "msg_pending": "✅ Questo indicatore è in sospeso. Puoi compilarlo!",
         "confidence_options": ["Sistema", "Foglio di calcolo", "Stima"],
+        "correction_reasons": ["Errore di Digitazione", "Dati Aggiornati", "Revisione Dati", "Altro"],
         "regions": {
             "Diaconia - Governo Geral": "Diaconia - Governo Generale",
             "Regional Brasil Nordeste I": "Regione Nord-Est Brasile I",
@@ -378,8 +411,16 @@ TRANSLATIONS = {
         "val_label": "Valeur",
         "conf_label": "Confiance des Données",
         "btn_save": "Enregistrer les Données",
+        "btn_correct": "🔄 Corriger",
+        "btn_history": "📋 Historique",
+        "btn_confirm_correct": "✅ Confirmer la Correction",
+        "btn_cancel": "❌ Annuler",
         "msg_success": "Données enregistrées avec succès!",
+        "msg_success_correct": "✅ Correction enregistrée avec succès!",
+        "msg_already_filled": "⚠️ Cet indicateur pour {ano} a déjà été rempli!",
+        "msg_pending": "✅ Cet indicateur est en attente. Vous pouvez le remplir!",
         "confidence_options": ["Système", "Feuille de calcul", "Estimation"],
+        "correction_reasons": ["Erreur de Saisie", "Données Mises à Jour", "Révision des Données", "Autre"],
         "regions": {
             "Diaconia - Governo Geral": "Diaconia - Gouvernement Général",
             "Regional Brasil Nordeste I": "Région Nord-Est Brésil I",
@@ -428,8 +469,16 @@ TRANSLATIONS = {
         "val_label": "Wert",
         "conf_label": "Datenvertrauen",
         "btn_save": "Daten Speichern",
+        "btn_correct": "🔄 Korrigieren",
+        "btn_history": "📋 Verlauf",
+        "btn_confirm_correct": "✅ Korrektur Bestätigen",
+        "btn_cancel": "❌ Abbrechen",
         "msg_success": "Daten erfolgreich gespeichert!",
+        "msg_success_correct": "✅ Korrektur erfolgreich registriert!",
+        "msg_already_filled": "⚠️ Dieser Indikator für {ano} wurde bereits ausgefüllt!",
+        "msg_pending": "✅ Dieser Indikator ist ausstehend. Sie können ihn ausfüllen!",
         "confidence_options": ["System", "Tabellenkalkulation", "Schätzung"],
+        "correction_reasons": ["Tippfehler", "Aktualisierte Daten", "Datenüberprüfung", "Sonstiges"],
         "regions": {
             "Diaconia - Governo Geral": "Diaconia - Allgemeine Regierung",
             "Regional Brasil Nordeste I": "Region Nordost-Brasilien I",
@@ -751,6 +800,12 @@ INDICATORS_TRANSLATIONS = {
 # CONFIGURAÇÃO DO APP
 st.set_page_config(page_title="Shalom Indicators", layout="wide")
 
+# Session state para correções
+if "corrigindo_id" not in st.session_state:
+    st.session_state.corrigindo_id = None
+if "mostrando_historico" not in st.session_state:
+    st.session_state.mostrando_historico = None
+
 # SIDEBAR - Seleção de Idioma
 sel_lang = st.sidebar.selectbox("🌍 Language / Idioma", list(TRANSLATIONS.keys()))
 t = TRANSLATIONS[sel_lang]
@@ -763,7 +818,6 @@ st.markdown("---")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    # SELEÇÃO DE REGIONAL
     regionais_pt_keys = list(MISSOES_PT.keys())
     regionais_display = [t["regions"][regional_pt] for regional_pt in regionais_pt_keys]
     
@@ -772,7 +826,6 @@ with col1:
     regional_pt = regionais_pt_keys[idx_regional]
 
 with col2:
-    # SELEÇÃO DE MISSÃO (filtra conforme regional)
     missoes_display = MISSOES_PT[regional_pt]
     idx_missao = st.selectbox(t["mission_label"], range(len(missoes_display)), 
                              format_func=lambda x: missoes_display[x])
@@ -784,7 +837,6 @@ with col3:
 col4, col5 = st.columns(2)
 
 with col4:
-    # SELEÇÃO DE SETOR/ASSISTÊNCIA
     setores_pt_keys = list(DB_STRUCTURE_PT.keys())
     setores_display = [t["sectors"][setor_pt] for setor_pt in setores_pt_keys]
     
@@ -793,9 +845,219 @@ with col4:
     setor_pt = setores_pt_keys[idx_setor]
 
 with col5:
-    pass  # Espaço vazio para alinhamento
+    pass
 
-# SELEÇÃO DE INDICADOR (traduzido conforme idioma)
+st.markdown("---")
+
+# ========== PAINEL DE PROGRESSO ==========
+st.markdown(f"## 📊 {t['title'].replace('Portal de', 'Progresso de')} - {missao_pt}")
+
+# Busca dados no Supabase para essa missão e setor
+try:
+    registros = supabase.table("historico_indicadores").select(
+        "id, indicador, ano, valor, tipo_valor, confianca, versao_ativa"
+    ).eq("regional", regional_pt).eq("missao", missao_pt).eq(
+        "assessoria_assistencia", setor_pt
+    ).eq("versao_ativa", True).execute()
+    
+    registros_ativos = registros.data if registros.data else []
+except:
+    registros_ativos = []
+
+# Cria dicionário de preenchidos
+preenchidos = {
+    (r['indicador'], r['ano']): {
+        'id': r['id'],
+        'valor': r['valor'],
+        'tipo_valor': r['tipo_valor'],
+        'confianca': r['confianca']
+    }
+    for r in registros_ativos
+}
+
+# Calcula progresso
+indicadores_setor = DB_STRUCTURE_PT[setor_pt]
+total_indicadores = len(indicadores_setor)
+total_esperado = total_indicadores * 3  # 3 anos (2024, 2025, 2026)
+
+feitos_total = len(preenchidos)
+percentual_geral = (feitos_total / total_esperado) * 100 if total_esperado > 0 else 0
+
+# Mostra barra geral
+st.markdown(f"**Total Geral:** {feitos_total}/{total_esperado} ({percentual_geral:.0f}%)")
+st.progress(percentual_geral / 100)
+
+# Mostra progresso por ano
+col_2024, col_2025, col_2026 = st.columns(3)
+
+for ano_ref, col_ref in [(2024, col_2024), (2025, col_2025), (2026, col_2026)]:
+    with col_ref:
+        feitos_ano = sum(1 for (ind, an) in preenchidos.keys() if an == ano_ref)
+        percentual_ano = (feitos_ano / total_indicadores) * 100 if total_indicadores > 0 else 0
+        
+        status_icon = "✅" if percentual_ano == 100 else "⚠️" if percentual_ano > 0 else "❌"
+        
+        st.markdown(f"**{ano_ref}: {status_icon}**")
+        st.markdown(f"{feitos_ano}/{total_indicadores} ({percentual_ano:.0f}%)")
+        st.progress(percentual_ano / 100)
+
+st.markdown("---")
+
+# ========== RESUMO DE DADOS JÁ PREENCHIDOS ==========
+st.markdown("## ✅ Dados Já Registrados")
+
+if registros_ativos:
+    # Cria tabela de dados
+    dados_tabela = []
+    for r in registros_ativos:
+        tipo = r['tipo_valor']
+        valor = r['valor']
+        
+        if tipo == "%":
+            display = f"{valor}%"
+        elif tipo == "$":
+            display = f"${valor:,.0f}"
+        else:
+            display = str(valor)
+        
+        dados_tabela.append({
+            "Indicador": r['indicador'],
+            "Ano": r['ano'],
+            "Valor": display,
+            "Confiança": r['confianca']
+        })
+    
+    df = pd.DataFrame(dados_tabela)
+    st.dataframe(df, use_container_width=True)
+    
+    # Botões de correção e histórico
+    st.markdown("### 🔧 Ações")
+    
+    for r in registros_ativos:
+        col_ind, col_correct, col_hist = st.columns([2, 1, 1])
+        
+        with col_ind:
+            st.write(f"**{r['indicador']}** ({r['ano']})")
+        
+        with col_correct:
+            if st.button(t["btn_correct"], key=f"corr_{r['id']}"):
+                st.session_state.corrigindo_id = r['id']
+                st.session_state.corrigindo_indicador = r['indicador']
+                st.rerun()
+        
+        with col_hist:
+            if st.button(t["btn_history"], key=f"hist_{r['id']}"):
+                st.session_state.mostrando_historico = r['id']
+                st.rerun()
+else:
+    st.info("📭 Nenhum dado preenchido ainda para essa combinação.")
+
+st.markdown("---")
+
+# ========== FORMULÁRIO DE CORREÇÃO ==========
+if st.session_state.corrigindo_id:
+    st.markdown("### 🔧 Corrigir Indicador")
+    
+    try:
+        registro_original = supabase.table("historico_indicadores").select(
+            "*"
+        ).eq("id", st.session_state.corrigindo_id).execute()
+        
+        if registro_original.data:
+            original = registro_original.data[0]
+            
+            col_info, col_form = st.columns(2)
+            
+            with col_info:
+                st.write(f"**Indicador:** {original['indicador']}")
+                st.write(f"**Ano:** {original['ano']}")
+                st.write(f"**Valor Anterior:** {original['valor']}")
+            
+            with col_form:
+                novo_valor = st.number_input(
+                    t["val_label"],
+                    value=int(original['valor']),
+                    step=1
+                )
+                
+                motivo = st.selectbox(
+                    t["conf_label"],
+                    t["correction_reasons"]
+                )
+                
+                if motivo == t["correction_reasons"][-1]:  # "Outro"
+                    motivo_detalhado = st.text_input("Explicar motivo")
+                else:
+                    motivo_detalhado = motivo
+            
+            col_btn1, col_btn2 = st.columns(2)
+            
+            with col_btn1:
+                if st.button(t["btn_confirm_correct"], use_container_width=True):
+                    # Marca antigo como inativo
+                    supabase.table("historico_indicadores").update({
+                        "versao_ativa": False
+                    }).eq("id", st.session_state.corrigindo_id).execute()
+                    
+                    # Insere novo
+                    novo_registro = {
+                        "regional": original['regional'],
+                        "missao": original['missao'],
+                        "ano": original['ano'],
+                        "assessoria_assistencia": original['assessoria_assistencia'],
+                        "indicador": original['indicador'],
+                        "valor": int(novo_valor),
+                        "tipo_valor": original['tipo_valor'],
+                        "confianca": original['confianca'],
+                        "idioma_preenchimento": sel_lang,
+                        "versao_ativa": True,
+                        "motivo_correcao": motivo_detalhado,
+                        "versao_anterior_id": st.session_state.corrigindo_id,
+                        "data_preenchimento": datetime.now().isoformat()
+                    }
+                    
+                    supabase.table("historico_indicadores").insert(novo_registro).execute()
+                    
+                    st.success(t["msg_success_correct"])
+                    st.session_state.corrigindo_id = None
+                    st.rerun()
+            
+            with col_btn2:
+                if st.button(t["btn_cancel"], use_container_width=True):
+                    st.session_state.corrigindo_id = None
+                    st.rerun()
+    except Exception as e:
+        st.error(f"Erro ao carregar dados: {e}")
+
+st.markdown("---")
+
+# ========== HISTÓRICO DE VERSÕES ==========
+if st.session_state.mostrando_historico:
+    st.markdown("### 📋 Histórico de Versões")
+    
+    try:
+        # Busca todas as versões
+        todas_versoes = supabase.table("historico_indicadores").select(
+            "*"
+        ).or_rows(
+            f"id.eq.{st.session_state.mostrando_historico},versao_anterior_id.eq.{st.session_state.mostrando_historico}"
+        ).order("created_at", desc=True).execute()
+        
+        if todas_versoes.data:
+            for idx, versao in enumerate(todas_versoes.data, 1):
+                status = "✅ ATIVO" if versao['versao_ativa'] else "🔄 CORRIGIDO"
+                motivo = f" ({versao['motivo_correcao']})" if versao.get('motivo_correcao') else ""
+                
+                st.write(f"**v{idx}** {status}{motivo}")
+                st.caption(f"Valor: {versao['valor']} | {versao['data_preenchimento'][:10]}")
+    except Exception as e:
+        st.error(f"Erro ao carregar histórico: {e}")
+
+st.markdown("---")
+
+# ========== FORMULÁRIO PRINCIPAL ==========
+st.markdown("## 📝 Preencher Novo Indicador")
+
 if sel_lang in INDICATORS_TRANSLATIONS and setor_pt in INDICATORS_TRANSLATIONS[sel_lang]:
     indicadores_display = INDICATORS_TRANSLATIONS[sel_lang][setor_pt]
 else:
@@ -805,22 +1067,29 @@ idx_ind = st.selectbox(t["indicator_label"], range(len(indicadores_display)),
                        format_func=lambda x: indicadores_display[x])
 indicador_pt = DB_STRUCTURE_PT[setor_pt][idx_ind]
 
-# Detectar formato do indicador
+# Detectar formato
 formato = detect_indicator_format(indicador_pt)
 
-# VALOR (com formato apropriado)
-col6, col7 = st.columns(2)
+# Verificar se já foi preenchido
+ja_preenchido = (indicador_pt, ano) in preenchidos
 
-with col6:
+if ja_preenchido:
+    st.warning(t["msg_already_filled"].format(ano=ano))
+    st.info(f"Valor registrado: {preenchidos[(indicador_pt, ano)]['valor']} | Confiança: {preenchidos[(indicador_pt, ano)]['confianca']}")
+else:
+    st.success(t["msg_pending"])
+
+col_valor, col_confianca = st.columns(2)
+
+with col_valor:
     if formato == "%":
-        valor = st.number_input(t["val_label"] + " (%)", min_value=0.0, max_value=100.0, step=0.1)
+        valor = st.number_input(t["val_label"] + " (0-100)", min_value=0, max_value=100, step=1)
     elif formato == "#":
-        valor = st.number_input(t["val_label"] + " (#)", min_value=0, step=1)
+        valor = st.number_input(t["val_label"] + " (inteiro)", min_value=0, step=1)
     else:  # $
-        valor = st.number_input(t["val_label"] + " ($)", min_value=0.0, step=0.01)
+        valor = st.number_input(t["val_label"] + " (inteiro)", min_value=0, step=1)
 
-with col7:
-    # CONFIANÇA
+with col_confianca:
     confianca_keys = t["confidence_options"]
     confianca_pt_map = {
         "Sistema": "Sistema",
@@ -847,31 +1116,26 @@ with col7:
                                 format_func=lambda x: confianca_keys[x])
     confianca_pt = confianca_pt_map.get(confianca_keys[confianca_idx], confianca_keys[confianca_idx])
 
-# BOTÃO SALVAR
-if st.button(t["btn_save"], use_container_width=True):
-    # Formatar valor conforme tipo
-    if formato == "%":
-        valor_formatado = f"{valor}%"
-    elif formato == "#":
-        valor_formatado = str(int(valor))
-    else:  # $
-        valor_formatado = f"{valor:.2f}"
-    
+if st.button(t["btn_save"], use_container_width=True, disabled=ja_preenchido):
     payload = {
         "regional": regional_pt,
         "missao": missao_pt,
         "ano": ano,
         "assessoria_assistencia": setor_pt,
         "indicador": indicador_pt,
-        "valor": valor_formatado,
-        "formato": formato,
+        "valor": int(valor),
+        "tipo_valor": formato,
         "confianca": confianca_pt,
         "idioma_preenchimento": sel_lang,
+        "versao_ativa": True,
+        "motivo_correcao": None,
+        "versao_anterior_id": None,
         "data_preenchimento": datetime.now().isoformat()
     }
     try:
         supabase.table("historico_indicadores").insert(payload).execute()
         st.success(t["msg_success"])
+        st.rerun()
     except Exception as e:
         st.error(f"Error: {e}")
 
