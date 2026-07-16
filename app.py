@@ -746,8 +746,8 @@ st.set_page_config(page_title="Shalom Indicators", layout="wide")
 # =====================================================
 
 try:
-    SUPABASE_URL = st.secrets["https://dhvekggpufraioiyszle.supabase.co"]
-    SUPABASE_KEY = st.secrets["sb_publishable_h5Ot3KlVRXnFEmrGe2Lviw_kjsX4ErE"]
+   SUPABASE_URL = st.secrets["SUPABASE_URL"]
+    SUPABASE_KEY = st.secrets["SUPABASE_ANON_KEY"]
     LOOKER_URL = st.secrets.get("LOOKER_URL", "")
 except KeyError as e:
     st.error(
