@@ -741,18 +741,32 @@ INDICATORS_TRANSLATIONS = {
 
 st.set_page_config(page_title="Shalom Indicators", layout="wide")
 
-# Produção (Streamlit Cloud):
-# SUPABASE_URL = st.secrets["SUPABASE_URL"]
-# SUPABASE_KEY = st.secrets["SUPABASE_ANON_KEY"]
-# LOOKER_URL = st.secrets.get("LOOKER_URL", "")
+# =====================================================
+# CREDENCIAIS (via Streamlit Secrets)
+# =====================================================
 
-# Local:
-SUPABASE_URL = "https://dhvekggpufraioiyszle.supabase.co"
-SUPABASE_KEY = "SUA_API_KEY_AQUI"
-LOOKER_URL = ""
+try:
+    SUPABASE_URL = st.secrets["SUPABASE_URL"]
+    SUPABASE_KEY = st.secrets["SUPABASE_ANON_KEY"]
+    LOOKER_URL = st.secrets.get("LOOKER_URL", "")
+except KeyError as e:
+    st.error(
+        f"⚠️ Configuração ausente: {e}. "
+        "Verifique se SUPABASE_URL e SUPABASE_ANON_KEY estão cadastrados "
+        "em Settings → Secrets do app no Streamlit Cloud."
+    )
+    st.stop()
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
+try:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+except Exception as e:
+    st.error(
+        "⚠️ Não foi possível conectar ao banco de dados. "
+        "Isso pode acontecer se o projeto Supabase estiver pausado ou "
+        "se a URL/chave estiverem incorretas. "
+        f"Detalhe técnico: {e}"
+    )
+    st.stop()
 # Mapa de confiança — centralizado uma única vez
 CONFIANCA_PT_MAP = {
     "Sistema": "Sistema", "Planilha": "Planilha", "Chute/Estimativa": "Chute/Estimativa",
